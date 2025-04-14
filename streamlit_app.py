@@ -118,6 +118,8 @@ if 'y_test' not in st.session_state:
     st.session_state.y_test = None
 if 'random_indices' not in st.session_state:
     st.session_state.random_indices = None
+if 'y_test_labels' not in st.session_state:
+    st.session_state.y_test_labels = None
 
 def load_saved_model():
     try:
@@ -189,8 +191,9 @@ def main():
 
     # Load test data if not already loaded
     if st.session_state.x_test is None:
-        _, (x_test, _) = cifar10.load_data()
+        _, (x_test, y_test) = cifar10.load_data()
         st.session_state.x_test = x_test.astype('float32') / 255.0
+        st.session_state.y_test_labels = y_test.squeeze()  # Store the labels
 
     # Generate random indices only once when app starts or they don't exist
     if st.session_state.random_indices is None:
@@ -212,6 +215,9 @@ def main():
         
         # Display image and create button
         with cols[col_idx]:
+            # Show the real label
+            true_label = class_names[st.session_state.y_test_labels[idx]]
+            st.markdown(f"<p style='text-align: center; color: white;'><strong>Real: {true_label}</strong></p>", unsafe_allow_html=True)
             st.image(img, width=64)
             if st.button(f'Predict {i+1}', key=f'pred_{i}'):
                 if st.session_state.model is not None:
