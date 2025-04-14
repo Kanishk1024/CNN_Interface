@@ -16,6 +16,8 @@ if 'x_test' not in st.session_state:
     st.session_state.x_test = None
 if 'y_test' not in st.session_state:
     st.session_state.y_test = None
+if 'random_indices' not in st.session_state:
+    st.session_state.random_indices = None
 
 def load_saved_model():
     try:
@@ -71,14 +73,18 @@ def main():
         _, (x_test, _) = cifar10.load_data()
         st.session_state.x_test = x_test.astype('float32') / 255.0
 
-    # Display random images
+    # Generate random indices only once when app starts or they don't exist
+    if st.session_state.random_indices is None:
+        num_images = 20
+        st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=num_images)
+    
+    # Display random images using stored indices
     st.subheader('Click an image to predict:')
     num_images = 20
-    random_indices = np.random.randint(0, len(st.session_state.x_test), size=num_images)
     
     # Create columns for images
     cols = st.columns(5)
-    for i, idx in enumerate(random_indices):
+    for i, idx in enumerate(st.session_state.random_indices):
         col_idx = i % 5
         img = (st.session_state.x_test[idx] * 255).astype(np.uint8)
         
