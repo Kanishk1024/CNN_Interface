@@ -108,6 +108,9 @@ st.markdown("""
 
 # Constants
 MODEL_PATH = 'static/saved_model/cifar10_model.keras'
+DATASET_PATH = 'static/dataset'
+TRAIN_DATA_PATH = os.path.join(DATASET_PATH, 'train_data.npz')
+TEST_DATA_PATH = os.path.join(DATASET_PATH, 'test_data.npz')
 
 # Initialize session state
 if 'model' not in st.session_state:
@@ -128,17 +131,59 @@ def load_saved_model():
     except:
         return False
 
+def load_or_create_dataset():
+    """Load dataset from disk if exists, otherwise download and save it"""
+    try:
+        if os.path.exists(TRAIN_DATA_PATH) and os.path.exists(TEST_DATA_PATH):
+            # Load existing dataset
+            train_data = np.load(TRAIN_DATA_PATH)
+            test_data = np.load(TEST_DATA_PATH)
+            
+            x_train, y_train = train_data['x_train'], train_data['y_train']
+            x_test, y_test = test_data['x_test'], test_data['y_test']
+            
+        else:
+            # Download and save dataset
+            os.makedirs(DATASET_PATH, exist_ok=True)
+            (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+            
+            # Save training data
+            np.savez_compressed(
+                TRAIN_DATA_PATH, 
+                x_train=x_train, 
+                y_train=y_train
+            )
+            
+            # Save test data
+            np.savez_compressed(
+                TEST_DATA_PATH, 
+                x_test=x_test, 
+                y_test=y_test
+            )
+            
+        # Preprocess data
+        x_train = x_train.astype('float32') / 255.0
+        x_test = x_test.astype('float32') / 255.0
+        
+        return (x_train, y_train), (x_test, y_test)
+        
+    except Exception as e:
+        st.error(f"Error loading dataset: {str(e)}")
+        return None
+
 def train_model():
     try:
         # Create necessary directories
         model_dir = os.path.dirname(MODEL_PATH)
         os.makedirs(model_dir, exist_ok=True)
 
-        # Load and preprocess CIFAR-10 dataset
+        # Load dataset
         with st.spinner('Loading CIFAR-10 dataset...'):
-            (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-            x_train = x_train.astype('float32') / 255.0
-            x_test = x_test.astype('float32') / 255.0
+            dataset = load_or_create_dataset()
+            if dataset is None:
+                return
+                
+            (x_train, y_train), (x_test, y_test) = dataset
             st.session_state.x_test = x_test
 
             y_train = tf.keras.utils.to_categorical(y_train, 10)
@@ -147,7 +192,7 @@ def train_model():
         # Create and train model
         with st.spinner('Training model...'):
             st.session_state.model = create_model()
-            st.session_state.model.fit(x_train, y_train, epochs=1, batch_size=128, validation_data=(x_test, y_test))
+            st.session_state.model.fit(x_train, y_train, epochs=20, batch_size=128, validation_data=(x_test, y_test))
             st.session_state.model.save(MODEL_PATH)
             st.success('Model trained and saved successfully!')
 
@@ -191,9 +236,11 @@ def main():
 
     # Load test data if not already loaded
     if st.session_state.x_test is None:
-        _, (x_test, y_test) = cifar10.load_data()
-        st.session_state.x_test = x_test.astype('float32') / 255.0
-        st.session_state.y_test_labels = y_test.squeeze()  # Store the labels
+        dataset = load_or_create_dataset()
+        if dataset:
+            _, (x_test, y_test) = dataset
+            st.session_state.x_test = x_test
+            st.session_state.y_test_labels = y_test.squeeze()  # Store the labels
 
     # Generate random indices only once when app starts or they don't exist
     if st.session_state.random_indices is None:
