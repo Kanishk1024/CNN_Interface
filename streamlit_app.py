@@ -108,9 +108,6 @@ st.markdown("""
 
 # Constants
 MODEL_PATH = 'static/saved_model/cifar10_model.keras'
-DATASET_PATH = 'static/dataset'
-X_TEST_PATH = os.path.join(DATASET_PATH, 'x_test.npy')
-Y_TEST_PATH = os.path.join(DATASET_PATH, 'y_test.npy')
 
 # Initialize session state
 if 'model' not in st.session_state:
@@ -141,16 +138,8 @@ def train_model():
         with st.spinner('Loading CIFAR-10 dataset...'):
             (x_train, y_train), (x_test, y_test) = cifar10.load_data()
             x_train = x_train.astype('float32') / 255.0
-            
-            # Use the stored test data
-            if st.session_state.x_test is None:
-                x_test, y_test = load_or_create_dataset()
-                st.session_state.x_test = x_test
-                st.session_state.y_test_labels = y_test.squeeze()
-            else:
-                x_test = st.session_state.x_test
-                y_test = st.session_state.y_test_labels
-
+            x_test = x_test.astype('float32') / 255.0
+            st.session_state.x_test = x_test
             y_train = tf.keras.utils.to_categorical(y_train, 10)
             y_test = tf.keras.utils.to_categorical(y_test, 10)
 
@@ -163,25 +152,6 @@ def train_model():
 
     except Exception as e:
         st.error(f"Error during training: {str(e)}")
-
-def load_or_create_dataset():
-    """Load dataset from disk if exists, otherwise download and save it"""
-    if os.path.exists(X_TEST_PATH) and os.path.exists(Y_TEST_PATH):
-        # Load existing dataset
-        return np.load(X_TEST_PATH), np.load(Y_TEST_PATH)
-    else:
-        # Download dataset
-        _, (x_test, y_test) = cifar10.load_data()
-        x_test = x_test.astype('float32') / 255.0
-        
-        # Create directory if it doesn't exist
-        os.makedirs(DATASET_PATH, exist_ok=True)
-        
-        # Save dataset
-        np.save(X_TEST_PATH, x_test)
-        np.save(Y_TEST_PATH, y_test)
-        
-        return x_test, y_test
 
 def main():
     st.markdown("<h1> CIFAR-10 Image Classifier</h1>", unsafe_allow_html=True)
@@ -220,8 +190,8 @@ def main():
 
     # Load test data if not already loaded
     if st.session_state.x_test is None:
-        x_test, y_test = load_or_create_dataset()
-        st.session_state.x_test = x_test
+        _, (x_test, y_test) = cifar10.load_data()
+        st.session_state.x_test = x_test.astype('float32') / 255.0
         st.session_state.y_test_labels = y_test.squeeze()  # Store the labels
 
     # Generate random indices only once when app starts or they don't exist
