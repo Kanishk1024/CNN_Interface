@@ -155,7 +155,7 @@ def train_model():
         st.error(f"Error during training: {str(e)}")
 
 def main():
-    st.markdown("<h1>🖼️ CIFAR-10 Image Classifier</h1>", unsafe_allow_html=True)
+    st.markdown("<h1> CIFAR-10 Image Classifier</h1>", unsafe_allow_html=True)
     
     # Create two columns for layout
     col1, col2 = st.columns([1, 3])
@@ -213,11 +213,10 @@ def main():
         
         # Display image and create button
         with cols[col_idx]:
-            # Show the label without "Real:" prefix, centered and styled
+            # Display true label
             true_label = class_names[st.session_state.y_test_labels[idx]]
             st.markdown(f"""
-                <div style='text-align: center; 
-                           color: white; 
+                <div style= color: white; 
                            margin-bottom: 0.5rem; 
                            font-weight: bold;
                            text-transform: capitalize;'>
