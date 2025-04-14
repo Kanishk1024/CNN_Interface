@@ -16,41 +16,92 @@ st.set_page_config(
 # Add custom CSS
 st.markdown("""
 <style>
+    /* Modern gradient background */
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Container styling */
     .main {
         padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
     }
+
+    /* Enhanced button styling */
     .stButton button {
-        background-color: #4CAF50;
+        background: linear-gradient(45deg, #4CAF50, #45a049);
         color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
+        padding: 0.6rem 1.2rem;
+        border-radius: 8px;
         border: none;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+        transform: translateY(0);
+        font-weight: 600;
+        letter-spacing: 0.5px;
     }
+
     .stButton button:hover {
-        background-color: #45a049;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        background: linear-gradient(45deg, #45a049, #4CAF50);
     }
+
+    .stButton button:active {
+        transform: translateY(1px);
+    }
+
+    /* Headings */
     h1 {
-        color: #1E88E5;
+        color: white;
         text-align: center;
         padding-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
+
     h3 {
-        color: #424242;
+        color: white;
         margin-top: 2rem;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
     }
+
+    /* Alerts */
     .stAlert {
         padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    .element-container img {
         border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
+        margin: 1rem 0;
+        backdrop-filter: blur(5px);
     }
+
+    /* Images */
+    .element-container img {
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
     .element-container img:hover {
-        transform: scale(1.05);
+        transform: scale(1.08);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Markdown text */
+    .markdown-text-container {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 8px;
+        backdrop-filter: blur(5px);
+    }
+
+    /* Divider */
+    hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        margin: 2rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -143,7 +194,7 @@ def main():
 
     # Generate random indices only once when app starts or they don't exist
     if st.session_state.random_indices is None:
-        num_images = 20
+        num_images = 10
         st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=num_images)
 
     st.markdown("---")
