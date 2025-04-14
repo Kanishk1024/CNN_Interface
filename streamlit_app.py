@@ -204,9 +204,7 @@ def main():
     st.markdown("### 🎯 Test the Model")
     st.markdown("Click on any image below to get a prediction")
     
-    # Display random images using stored indices
-    num_images = 10
-    
+
     # Create columns for images
     cols = st.columns(5)
     for i, idx in enumerate(st.session_state.random_indices):
@@ -215,10 +213,22 @@ def main():
         
         # Display image and create button
         with cols[col_idx]:
-            # Show the real label
+            # Show the label without "Real:" prefix, centered and styled
             true_label = class_names[st.session_state.y_test_labels[idx]]
-            st.markdown(f"<p style='text-align: center; color: white;'><strong>Real: {true_label}</strong></p>", unsafe_allow_html=True)
+            st.markdown(f"""
+                <div style='text-align: center; 
+                           color: white; 
+                           margin-bottom: 0.5rem; 
+                           font-weight: bold;
+                           text-transform: capitalize;'>
+                    {true_label}
+                </div>
+            """, unsafe_allow_html=True)
+            
+            # Display image
             st.image(img, width=64)
+            
+            # Add prediction button
             if st.button(f'Predict {i+1}', key=f'pred_{i}'):
                 if st.session_state.model is not None:
                     img_processed = np.expand_dims(st.session_state.x_test[idx], axis=0)
