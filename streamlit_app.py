@@ -243,7 +243,7 @@ def main():
         if st.button("🔄 Load New Random Images", key="refresh"):
             # Generate new random indices
             st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=10)
-            st.experimental_rerun()
+            st.rerun()
 
 if __name__ == '__main__':
     main()
