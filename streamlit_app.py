@@ -236,5 +236,14 @@ def main():
                 else:
                     st.error('Please train the model first!')
 
+    # After the image display loop, add a centered refresh button
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if st.button("🔄 Load New Random Images", key="refresh"):
+            # Generate new random indices
+            st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=10)
+            st.experimental_rerun()
+
 if __name__ == '__main__':
     main()
