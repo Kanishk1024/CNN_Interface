@@ -103,6 +103,19 @@ st.markdown("""
         background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
         margin: 2rem 0;
     }
+
+    /* Center button container */
+    .center-button {
+        display: flex;
+        justify-content: center;
+        margin: 2rem auto;
+    }
+
+    /* Special styling for centered button */
+    .center-button .stButton button {
+        min-width: 200px;
+        text-align: center;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -238,12 +251,12 @@ def main():
 
     # After the image display loop, add a centered refresh button
     st.markdown("---")
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        if st.button("🔄 Load New Random Images", key="refresh"):
-            # Generate new random indices
-            st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=10)
-            st.rerun()
+    st.markdown('<div class="center-button">', unsafe_allow_html=True)
+    if st.button("🔄 Load New Random Images", key="refresh"):
+        # Generate new random indices
+        st.session_state.random_indices = np.random.randint(0, len(st.session_state.x_test), size=10)
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()
