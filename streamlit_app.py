@@ -179,6 +179,7 @@ def main():
             st.success('✅ Model loaded and ready')
             if st.session_state.model is None:
                 load_saved_model()
+            st.success('Model trained and saved successfully!')
         else:
             st.error('❌ No model found')
         
