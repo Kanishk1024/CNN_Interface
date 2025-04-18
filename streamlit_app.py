@@ -182,8 +182,6 @@ def main():
         else:
             st.error('❌ No model found')
         
-        if st.button('🚀 Train Model'):
-            train_model()
     
     with col2:
         st.markdown("### How it works")
